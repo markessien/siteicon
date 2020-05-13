@@ -1,6 +1,6 @@
 import re
-from dataclasses        import dataclass
-
+from dataclasses    import dataclass
+from helpers        import fully_qualify_url
 # A dataclass that represents a single favicon
 @dataclass
 class FavIcon:
@@ -14,14 +14,14 @@ class FavIcon:
             return (self.width * self.height) < (other.width * other.height)
 
 
-def find_favicons(soup, siteicons):
+def find_favicons(site_url, soup, siteicons):
 
     # Get all favicons from the html
     favicons = soup.findAll("link", rel="icon")
     for favicon in favicons:
         
         # Get url and dimensions of the favicons
-        icon_href = favicon.get('href')
+        icon_href = fully_qualify_url(site_url, favicon.get('href'))
         icon_size = favicon.get('sizes')
 
         # If we got valid sizes, then store them
@@ -40,5 +40,5 @@ def find_favicons(soup, siteicons):
     # Put the biggest favicon in the favicon param for ease of retrieval
     if siteicons.favicon and len(siteicons.favicon) > 0:
         siteicons.favicon = siteicons.favicons[0].url
-        
+
     return siteicons
